@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>SUPER7 PRO</title>
+
+<script src="https://unpkg.com/@zxing/library@latest"></script>
+
+<style>
+
+body{
+font-family:Arial;
+background:#0f172a;
+color:white;
+margin:0;
+text-align:center;
+}
+
+header{
+background:#16a34a;
+padding:15px;
+font-size:20px;
+}
+
+.container{
+max-width:500px;
+margin:auto;
+padding:20px;
+}
+
+button{
+background:#22c55e;
+border:none;
+padding:12px 20px;
+color:white;
+font-size:16px;
+border-radius:8px;
+cursor:pointer;
+}
+
+input{
+padding:10px;
+border-radius:8px;
+border:none;
+margin-top:10px;
+width:80%;
+}
+
+.product{
+background:#1e293b;
+margin:10px 0;
+padding:15px;
+border-radius:10px;
+display:flex;
+justify-content:space-between;
+}
+
+.price{
+font-weight:bold;
+color:#4ade80;
+}
+
+#video{
+width:100%;
+margin-top:15px;
+border-radius:10px;
+}
+
+footer{
+margin-top:40px;
+font-size:14px;
+opacity:.7;
+}
+
+#app{
+display:none;
+}
+
+</style>
+
+</head>
+
+<body>
+
+<div id="login">
+
+<h2>Acceso SUPER7</h2>
+
+<p>Ingrese clave</p>
+
+<input type="password" id="clave">
+
+<br><br>
+
+<button onclick="login()">Entrar</button>
+
+</div>
+
+<div id="app">
+
+<header>
+SUPER7 Comparador de Precios
+</header>
+
+<div class="container">
+
+<h3>Escanear producto</h3>
+
+<button onclick="startScanner()">📷 Escanear</button>
+
+<video id="video"></video>
+
+<h3>Resultados</h3>
+
+<div id="results"></div>
+
+<button id="moreBtn" onclick="loadMore()" style="display:none">
+Mostrar más
+</button>
+
+</div>
+
+<footer>
+
+App creada por @germanvale
+
+</footer>
+
+</div>
+
+<script>
+
+function login(){
+
+const clave=document.getElementById("clave").value
+
+if(clave==="@germanvale"){
+
+document.getElementById("login").style.display="none"
+document.getElementById("app").style.display="block"
+
+}else{
+
+alert("Clave incorrecta")
+
+}
+
+}
+
+let productos=[]
+let page=0
+const pageSize=5
+
+function startScanner(){
+
+const codeReader = new ZXing.BrowserMultiFormatReader()
+
+codeReader.decodeFromVideoDevice(null,'video',(result,err)=>{
+
+if(result){
+
+buscarProducto(result.text)
+
+codeReader.reset()
+
+}
+
+})
+
+}
+
+function buscarProducto(codigo){
+
+const supermercados=[
+
+"Walmart",
+"Soriana",
+"Casa Ley",
+"Bodega Aurrera",
+"Chedraui",
+"Costco"
+
+]
+
+productos=[]
+
+supermercados.forEach(s=>{
+
+productos.push({
+
+nombre:"Producto "+codigo,
+super:s,
+precio:(Math.random()*50+10).toFixed(2)
+
+})
+
+})
+
+page=0
+render()
+
+}
+
+function render(){
+
+const results=document.getElementById("results")
+
+results.innerHTML=""
+
+const start=page*pageSize
+const end=start+pageSize
+
+const visibles=productos.slice(start,end)
+
+visibles.forEach(p=>{
+
+results.innerHTML+=`
+
+<div class="product">
+
+<span>${p.nombre}<br>${p.super}</span>
+
+<span class="price">$${p.precio}</span>
+
+</div>
+
+`
+
+})
+
+if(end<productos.length){
+
+document.getElementById("moreBtn").style.display="block"
+
+}else{
+
+document.getElementById("moreBtn").style.display="none"
+
+}
+
+}
+
+function loadMore(){
+
+page++
+render()
+
+}
+
+</script>
+
+</body>
+</html>
